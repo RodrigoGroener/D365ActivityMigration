@@ -7,7 +7,7 @@ As you know, it’s not possible to set the values of the Created By, Modified B
 At the creation of a record, check a field that ends with ‘_overriddencreatedby’ contains a value. If so, set the field createdby to that value.
 At updating a record, check a field that ends with ‘_overriddenmodifiedby’ contains a value. If so, set the field modifiedby to that value.
 At updating a record, check a field that ends with ‘_overriddenmodifiedon’ contains a value. If so, set the field modifiedon to that value.
-In order to make this work for your data migration or data import, just make sure you set the values of the fields ‘*_overriddencreatedby’, ‘*_overriddenmodifiedby’ and ‘*_overriddenmodifiedon’. These are the schema names of the fields. The display names are: Overridden Created By, Overridden Modified By and Overridden Modified On. When you import the solution, these fields are available on all entities. Activities where it's mostly needed are:
+In order to make this work for your data migration or data import, just make sure you set the values of the fields that ends with ‘_overriddencreatedby’, ‘_overriddenmodifiedby’ and ‘_overriddenmodifiedon’. These are the schema names of the fields. The display names are: Overridden Created By, Overridden Modified By and Overridden Modified On. When you import the solution, these fields are available on all entities. Activities where it's mostly needed are:
 
 - Appointment
 - E-mail
