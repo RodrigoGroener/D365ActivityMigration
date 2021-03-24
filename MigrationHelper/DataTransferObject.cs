@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
 
-namespace DeltaN.BusinessSolutions.ActivityMigration
+namespace MigrationHelper
 {
     [DataContract]
     internal class DataTransferObject

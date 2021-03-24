@@ -1,16 +1,15 @@
-﻿using Microsoft.Xrm.Sdk;
+﻿using System;
+using Microsoft.Xrm.Sdk;
 
-using System;
-
-namespace DeltaN.BusinessSolutions.ActivityMigration
+namespace MigrationHelper
 {
-    public class SetCreatedBy : IPlugin
+    public class SetModifiedOn : IPlugin
     {
         #region Secure/Unsecure Configuration Setup
         private string _secureConfig = null;
         private string _unsecureConfig = null;
 
-        public SetCreatedBy(string unsecureConfig, string secureConfig)
+        public SetModifiedOn(string unsecureConfig, string secureConfig)
         {
             _secureConfig = secureConfig;
             _unsecureConfig = unsecureConfig;
@@ -27,14 +26,14 @@ namespace DeltaN.BusinessSolutions.ActivityMigration
             {
                 if (context.InputParameters["Target"] is Entity entity && entity.LogicalName != "annotation")
                 {
-                    string attributeName = entity.Attributes.GetAttributeNameThatEndsBy(tracer, "_overriddencreatedby");
+                    string attributeName = entity.Attributes.GetAttributeNameThatEndsBy(tracer, "_overriddenmodifiedon");
 
-                    if (attributeName != null && entity.Contains(attributeName))
+                    if (attributeName != null && entity.Attributes.Contains(attributeName))
                     {
-                        tracer.Trace($"{attributeName} has value: {(entity[attributeName] as EntityReference)?.Name} | {(entity[attributeName] as EntityReference)?.Id}");
+                        tracer.Trace($"{attributeName} has value: {entity[attributeName]}");
 
-                        entity["createdby"] = entity[attributeName];
-                        tracer.Trace($"createdby overwritten with {attributeName}");
+                        entity.Attributes.Add("modifiedon", entity[attributeName]);
+                        tracer.Trace($"modifiedon overwritten with {attributeName}");
                     }
                 }
             }

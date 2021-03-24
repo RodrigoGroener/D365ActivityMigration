@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.Xrm.Sdk;
 
-namespace DeltaN.BusinessSolutions.ActivityMigration
+namespace MigrationHelper
 {
     public static class Extensions
     {

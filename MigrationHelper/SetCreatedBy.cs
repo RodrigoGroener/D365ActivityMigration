@@ -1,15 +1,15 @@
 ﻿using System;
 using Microsoft.Xrm.Sdk;
 
-namespace DeltaN.BusinessSolutions.ActivityMigration
+namespace MigrationHelper
 {
-    public class AnnotationSetModifiedByAndModifiedOn : IPlugin
+    public class SetCreatedBy : IPlugin
     {
         #region Secure/Unsecure Configuration Setup
         private string _secureConfig = null;
         private string _unsecureConfig = null;
 
-        public AnnotationSetModifiedByAndModifiedOn(string unsecureConfig, string secureConfig)
+        public SetCreatedBy(string unsecureConfig, string secureConfig)
         {
             _secureConfig = secureConfig;
             _unsecureConfig = unsecureConfig;
@@ -24,16 +24,16 @@ namespace DeltaN.BusinessSolutions.ActivityMigration
 
             try
             {
-                if (context.InputParameters["Target"] is Entity entity && entity.LogicalName == "annotation" && entity.Contains("subject"))
+                if (context.InputParameters["Target"] is Entity entity && entity.LogicalName != "annotation")
                 {
-                    var subject = (string)entity["subject"];
-                    if (subject != null && subject.StartsWith("{")) //JSON
+                    string attributeName = entity.Attributes.GetAttributeNameThatEndsBy(tracer, "_overriddencreatedby");
+
+                    if (attributeName != null && entity.Contains(attributeName))
                     {
-                        var annotationDto = DataTransferObject.ParseJson(subject);
-                        tracer.Trace(subject);
-                        entity["modifiedby"] = new EntityReference("systemuser", annotationDto.modifiedby);
-                        entity["modifiedon"] = annotationDto.modifiedon;
-                        entity["subject"] = annotationDto.originalfieldvalue;
+                        tracer.Trace($"{attributeName} has value: {(entity[attributeName] as EntityReference)?.Name} | {(entity[attributeName] as EntityReference)?.Id}");
+
+                        entity["createdby"] = entity[attributeName];
+                        tracer.Trace($"createdby overwritten with {attributeName}");
                     }
                 }
             }

@@ -1,16 +1,15 @@
-﻿using Microsoft.Xrm.Sdk;
+﻿using System;
+using Microsoft.Xrm.Sdk;
 
-using System;
-
-namespace DeltaN.BusinessSolutions.ActivityMigration
+namespace MigrationHelper
 {
-    public class SetModifiedOn : IPlugin
+    public class PostSetCreatedBy : IPlugin
     {
         #region Secure/Unsecure Configuration Setup
         private string _secureConfig = null;
         private string _unsecureConfig = null;
 
-        public SetModifiedOn(string unsecureConfig, string secureConfig)
+        public PostSetCreatedBy(string unsecureConfig, string secureConfig)
         {
             _secureConfig = secureConfig;
             _unsecureConfig = unsecureConfig;
@@ -25,16 +24,18 @@ namespace DeltaN.BusinessSolutions.ActivityMigration
 
             try
             {
-                if (context.InputParameters["Target"] is Entity entity && entity.LogicalName != "annotation")
+                if (context.InputParameters["Target"] is Entity entity && entity.Contains("text"))
                 {
-                    string attributeName = entity.Attributes.GetAttributeNameThatEndsBy(tracer, "_overriddenmodifiedon");
-
-                    if (attributeName != null && entity.Attributes.Contains(attributeName))
+                    var text = (string)entity["text"];
+                    if (text != null && text.StartsWith("{")) //JSON
                     {
-                        tracer.Trace($"{attributeName} has value: {entity[attributeName]}");
-
-                        entity.Attributes.Add("modifiedon", entity[attributeName]);
-                        tracer.Trace($"modifiedon overwritten with {attributeName}");
+                        var annotationDto = DataTransferObject.ParseJson(text);
+                        tracer.Trace(text);
+                        entity["createdon"] = annotationDto.createdon;
+                        entity["createdby"] = new EntityReference("systemuser", annotationDto.createdby);
+                        entity["modifiedon"] = annotationDto.modifiedon;
+                        entity["modifiedby"] = new EntityReference("systemuser", annotationDto.modifiedby);
+                        entity["text"] = annotationDto.originalfieldvalue;
                     }
                 }
             }

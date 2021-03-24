@@ -7,8 +7,8 @@
     <ProjectGuid>{56E63E6D-35E9-48B5-A549-1321610F197A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DeltaN.BusinessSolutions.ActivityMigration</RootNamespace>
-    <AssemblyName>DeltaN.BusinessSolutions.ActivityMigration</AssemblyName>
+    <RootNamespace>MigrationHelper</RootNamespace>
+    <AssemblyName>MigrationHelper</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

@@ -1,16 +1,15 @@
-﻿using Microsoft.Xrm.Sdk;
+﻿using System;
+using Microsoft.Xrm.Sdk;
 
-using System;
-
-namespace DeltaN.BusinessSolutions.ActivityMigration
+namespace MigrationHelper
 {
-    public class SetModifiedBy : IPlugin
+    public class AnnotationSetCreatedBy : IPlugin
     {
         #region Secure/Unsecure Configuration Setup
         private string _secureConfig = null;
         private string _unsecureConfig = null;
 
-        public SetModifiedBy(string unsecureConfig, string secureConfig)
+        public AnnotationSetCreatedBy(string unsecureConfig, string secureConfig)
         {
             _secureConfig = secureConfig;
             _unsecureConfig = unsecureConfig;
@@ -23,19 +22,17 @@ namespace DeltaN.BusinessSolutions.ActivityMigration
             IOrganizationServiceFactory factory = (IOrganizationServiceFactory)serviceProvider.GetService(typeof(IOrganizationServiceFactory));
             IOrganizationService service = factory.CreateOrganizationService(context.UserId);
 
-
             try
             {
-                if (context.InputParameters["Target"] is Entity entity && entity.LogicalName != "annotation")
+                if (context.InputParameters["Target"] is Entity entity && entity.LogicalName == "annotation" && entity.Contains("notetext"))
                 {
-                    string attributeName = entity.Attributes.GetAttributeNameThatEndsBy(tracer, "_overriddenmodifiedby");
-
-                    if (attributeName != null && entity.Contains(attributeName))
+                    var notetext = (string) entity["notetext"];
+                    if (notetext != null && notetext.StartsWith("{")) //JSON
                     {
-                        tracer.Trace($"{attributeName} has value: {(entity[attributeName] as EntityReference)?.Name} | {(entity[attributeName] as EntityReference)?.Id}");
-
-                        entity["modifiedby"] = entity[attributeName];
-                        tracer.Trace($"modifiedby overwritten with {attributeName}");
+                        var annotationDto = DataTransferObject.ParseJson(notetext);
+                        tracer.Trace(notetext);
+                        entity["createdby"] = new EntityReference("systemuser", annotationDto.createdby);
+                        entity["notetext"] = annotationDto.originalfieldvalue;
                     }
                 }
             }

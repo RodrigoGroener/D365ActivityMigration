@@ -1,16 +1,15 @@
-﻿using Microsoft.Xrm.Sdk;
+﻿using System;
+using Microsoft.Xrm.Sdk;
 
-using System;
-
-namespace DeltaN.BusinessSolutions.ActivityMigration
+namespace MigrationHelper
 {
-    public class AnnotationSetCreatedBy : IPlugin
+    public class AnnotationSetModifiedByAndModifiedOn : IPlugin
     {
         #region Secure/Unsecure Configuration Setup
         private string _secureConfig = null;
         private string _unsecureConfig = null;
 
-        public AnnotationSetCreatedBy(string unsecureConfig, string secureConfig)
+        public AnnotationSetModifiedByAndModifiedOn(string unsecureConfig, string secureConfig)
         {
             _secureConfig = secureConfig;
             _unsecureConfig = unsecureConfig;
@@ -25,15 +24,16 @@ namespace DeltaN.BusinessSolutions.ActivityMigration
 
             try
             {
-                if (context.InputParameters["Target"] is Entity entity && entity.LogicalName == "annotation" && entity.Contains("notetext"))
+                if (context.InputParameters["Target"] is Entity entity && entity.LogicalName == "annotation" && entity.Contains("subject"))
                 {
-                    var notetext = (string) entity["notetext"];
-                    if (notetext != null && notetext.StartsWith("{")) //JSON
+                    var subject = (string)entity["subject"];
+                    if (subject != null && subject.StartsWith("{")) //JSON
                     {
-                        var annotationDto = DataTransferObject.ParseJson(notetext);
-                        tracer.Trace(notetext);
-                        entity["createdby"] = new EntityReference("systemuser", annotationDto.createdby);
-                        entity["notetext"] = annotationDto.originalfieldvalue;
+                        var annotationDto = DataTransferObject.ParseJson(subject);
+                        tracer.Trace(subject);
+                        entity["modifiedby"] = new EntityReference("systemuser", annotationDto.modifiedby);
+                        entity["modifiedon"] = annotationDto.modifiedon;
+                        entity["subject"] = annotationDto.originalfieldvalue;
                     }
                 }
             }
