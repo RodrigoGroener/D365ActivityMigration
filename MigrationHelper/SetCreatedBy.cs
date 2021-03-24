@@ -24,7 +24,7 @@ namespace MigrationHelper
 
             try
             {
-                if (context.InputParameters["Target"] is Entity entity && entity.LogicalName != "annotation")
+                if (context.InputParameters["Target"] is Entity entity && entity.LogicalName != "annotation" && entity.LogicalName != "post")
                 {
                     string attributeName = entity.Attributes.GetAttributeNameThatEndsBy(tracer, "_overriddencreatedby");
 
