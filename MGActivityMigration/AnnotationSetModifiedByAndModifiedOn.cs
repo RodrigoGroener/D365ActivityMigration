@@ -43,12 +43,4 @@ namespace DeltaN.BusinessSolutions.ActivityMigration
             }
         }
     }
-
-    public class AnnotationSetUpdatedByAndUpdatedOn : IPlugin
-    {
-        public void Execute(IServiceProvider serviceProvider)
-        {
-            // Only for Backward Compability. Against failures when importing the solution because of the missing type "AnnotationSetUpdatedByAndUpdatedOn"
-        }
-    }
 }

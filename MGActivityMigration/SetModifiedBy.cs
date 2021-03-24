@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xrm.Sdk;
 
 using System;
-using System.Linq;
 
 namespace DeltaN.BusinessSolutions.ActivityMigration
 {
@@ -24,18 +23,18 @@ namespace DeltaN.BusinessSolutions.ActivityMigration
             IOrganizationServiceFactory factory = (IOrganizationServiceFactory)serviceProvider.GetService(typeof(IOrganizationServiceFactory));
             IOrganizationService service = factory.CreateOrganizationService(context.UserId);
 
+
             try
             {
-                if (context.InputParameters["Target"] is Entity entity && context.PreEntityImages.Contains("preImage"))
+                if (context.InputParameters["Target"] is Entity entity && entity.LogicalName != "annotation")
                 {
-                    Entity preImageEntity = context.PreEntityImages["preImage"];
+                    string attributeName = entity.Attributes.GetAttributeNameThatEndsBy(tracer, "_overriddenmodifiedby");
 
-                    string attributeName = preImageEntity.Attributes.GetAttributeNameThatEndsBy(tracer, "_overriddenmodifiedby");
-                    
-                    if (attributeName != null && preImageEntity.Contains("modifiedby") && preImageEntity.Contains(attributeName))
+                    if (attributeName != null && entity.Contains(attributeName))
                     {
-                        tracer.Trace($"{attributeName} has value: {(preImageEntity[attributeName] as EntityReference)?.Name} | {(preImageEntity[attributeName] as EntityReference)?.Id}");
-                        entity["modifiedby"] = preImageEntity[attributeName];
+                        tracer.Trace($"{attributeName} has value: {(entity[attributeName] as EntityReference)?.Name} | {(entity[attributeName] as EntityReference)?.Id}");
+
+                        entity["modifiedby"] = entity[attributeName];
                         tracer.Trace($"modifiedby overwritten with {attributeName}");
                     }
                 }

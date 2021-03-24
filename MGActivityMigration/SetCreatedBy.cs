@@ -25,7 +25,7 @@ namespace DeltaN.BusinessSolutions.ActivityMigration
 
             try
             {
-                if (context.InputParameters["Target"] is Entity entity && entity.Contains("createdby"))
+                if (context.InputParameters["Target"] is Entity entity && entity.LogicalName != "annotation")
                 {
                     string attributeName = entity.Attributes.GetAttributeNameThatEndsBy(tracer, "_overriddencreatedby");
 

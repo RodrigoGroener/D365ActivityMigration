@@ -26,7 +26,6 @@ namespace DeltaN.BusinessSolutions.ActivityMigration
 
         public string ToJson()
         {
-            
             var memoryStream = new MemoryStream();
             var jsonSerializer = new DataContractJsonSerializer(typeof(DataTransferObject));
             jsonSerializer.WriteObject(memoryStream, this);

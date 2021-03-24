@@ -25,44 +25,16 @@ namespace DeltaN.BusinessSolutions.ActivityMigration
 
             try
             {
-                if (context.InputParameters["Target"] is Entity entity)
+                if (context.InputParameters["Target"] is Entity entity && entity.LogicalName != "annotation")
                 {
-                    if (context.PreEntityImages.Contains("preImage"))
+                    string attributeName = entity.Attributes.GetAttributeNameThatEndsBy(tracer, "_overriddenmodifiedon");
+
+                    if (attributeName != null && entity.Attributes.Contains(attributeName))
                     {
-                        Entity preImageEntity = context.PreEntityImages["preImage"];
+                        tracer.Trace($"{attributeName} has value: {entity[attributeName]}");
 
-                        string attributeName = preImageEntity.Attributes.GetAttributeNameThatEndsBy(tracer, "_overriddenmodifiedon");
-
-                        if (attributeName != null && preImageEntity.Contains(attributeName))
-                        {
-                            tracer.Trace($"{attributeName} contains no data, {preImageEntity[attributeName]}");
-
-                            entity["modifiedon"] = preImageEntity[attributeName];
-                            tracer.Trace($"modifiedon overwritten with {attributeName}");
-                        }
-                    }
-                    else
-                    {
-                        string attributeName = entity.Attributes.GetAttributeNameThatEndsBy(tracer, "_overriddenmodifiedon");
-
-                        if (attributeName != null)
-                        {
-                            if (entity.Attributes.Contains(attributeName) &&
-                                entity.Attributes.Contains("modifiedon") == false)
-                            {
-                                tracer.Trace("modifiedon contains no data");
-
-                                entity.Attributes.Add("modifiedon", entity[attributeName]);
-                                tracer.Trace($"modifiedon filled with {attributeName}, {entity[attributeName]}");
-                            }
-                            else if (entity.Attributes.Contains(attributeName) && entity.Attributes.Contains("modifiedon"))
-                            {
-                                tracer.Trace("modifiedon already contains data");
-
-                                entity["modifiedon"] = entity[attributeName];
-                                tracer.Trace($"modifiedon overwritten with {attributeName}, {entity[attributeName]}");
-                            }
-                        }
+                        entity.Attributes.Add("modifiedon", entity[attributeName]);
+                        tracer.Trace($"modifiedon overwritten with {attributeName}");
                     }
                 }
             }
