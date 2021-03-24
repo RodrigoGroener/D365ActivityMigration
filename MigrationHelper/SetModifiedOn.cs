@@ -32,7 +32,7 @@ namespace MigrationHelper
                     {
                         tracer.Trace($"{attributeName} has value: {entity[attributeName]}");
 
-                        entity.Attributes.Add("modifiedon", entity[attributeName]);
+                        entity["modifiedon"] = entity[attributeName];
                         tracer.Trace($"modifiedon overwritten with {attributeName}");
                     }
                 }
